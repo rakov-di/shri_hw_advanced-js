@@ -1,59 +1,68 @@
-let proto = { value: 42 };
+(() => {
+  console.log('=== Задание №2 - in через proxy ===');
+  console.log('===================================');
 
-const name = Symbol('name')
-proto[name] = 'Igor';
+  // Задаем свойства для исходного объекта
+  let proto = { value: 42 };
+  const name = Symbol('name')
+  proto[name] = 'Igor';
 
-Object.defineProperty(proto, 'surname', {
+  Object.defineProperty(proto, 'surname', {
     value: 'Иванов',
     writable: true,
     configurable: true,
     enumerable: true,
-});
+  });
 
-Object.defineProperty(proto, 'nick', {
+  Object.defineProperty(proto, 'nick', {
     value: 'Igorek',
     writable: true,
     configurable: true,
     enumerable: false,
-});
+  });
 
 
+  // Задаем свойства для наследуемого объекта
+  const object = Object.create(proto);
 
-const object = Object.create(proto);
-
-Object.defineProperty(object, 'year', {
+  Object.defineProperty(object, 'year', {
     value: 2020,
     writable: true,
     configurable: true,
     enumerable: false,
-});
+  });
 
-const symbol = Symbol('bazzinga');
-object[symbol] = 42;
-
-
+  const symbol = Symbol('bazzinga');
+  object[symbol] = 42;
 
 
-console.log('======== без proxy =======')
-console.log('value' in object); // true
-console.log(name in object); // true
-console.log('surname' in object); // true
-console.log('nick' in object); // true
-console.log('year' in object); // true
-console.log(symbol in object); // true
 
-const proxy = new Proxy(object, {
-  has(target, key) {
-    return target.hasOwnProperty(key);
-  }
-})
+  // Тесты
+  console.log('======== без proxy =======');
+  console.log('======== св-ва/символы из прототипа =======');
+  console.log('value' in object); // true
+  console.log(name in object); // true
+  console.log('surname' in object); // true
+  console.log('nick' in object); // true
+  console.log('======== собственные св-ва/символы =======');
+  console.log('year' in object); // true
+  console.log(symbol in object); // true
 
-console.log('======== с proxy =======')
-console.log('value' in proxy); // false
-console.log(name in proxy); // false
-console.log('surname' in proxy); // false
-console.log('nick' in proxy); // false
-console.log('year' in proxy); // true
-console.log(symbol in proxy); // true
+  // РЕАЛИЗАЦИЯ прокси
+  const proxy = new Proxy(object, {
+    has(target, key) {
+      return target.hasOwnProperty(key);
+    }
+  });
 
+  console.log('======== с proxy =======');
+  console.log('======== св-ва/символы из прототипа =======');
+  console.log('value' in proxy); // false
+  console.log(name in proxy); // false
+  console.log('surname' in proxy); // false
+  console.log('nick' in proxy); // false
+  console.log('======== собственные св-ва/символы =======');
+  console.log('year' in proxy); // true
+  console.log(symbol in proxy); // true
+})();
 
